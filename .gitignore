@@ -1,0 +1,6 @@
+./__pycache__
+student/__pycache__
+src/game/__pycache__
+.venv
+mazegenerator*
+test.py
