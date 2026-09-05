@@ -15,6 +15,7 @@ dependencies = [
 
 [project.scripts]
 agent-smith = "student:main"
+sandbox = "student.cli:main_sandbox"
 
 
 [build-system]
