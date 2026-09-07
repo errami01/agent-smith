@@ -5,6 +5,9 @@ import traceback
 from typing import Dict, Any, Optional, List
 from types import ModuleType
 from student.schema import SandboxConfig
+from mcp import ClientSession, StdioServerParameters
+from student.tools import Toolset
+
 
 
 class Sandbox:
@@ -95,3 +98,38 @@ class Sandbox:
         finally:
             sys.stdout = sys.__stdout__
             sys.stderr = sys.__stderr__
+
+    def connect_mcp(self, server_script: str) -> None:
+            """
+            Connects to an MCP server and exposes its tools 
+            as functions in the sandbox namespace.
+            """
+            server_params = StdioServerParameters(
+                command="uv",
+                args=["run", "python", server_script],
+            )
+            
+            # This is a simplified version for the architecture explanation.
+            # In the full implementation, you'd use an async context manager
+            # or a background thread to keep the session alive.
+            try:
+                # We fetch tool metadata and create 'proxy' functions
+                # that call the MCP server.
+                self.namespace["read_file"] = Toolset.read_file
+                self.namespace["edit_file"] = Toolset.edit_file
+                self.namespace["list_files"] = Toolset.list_files
+                self.namespace["search_code"] = Toolset.search_code
+                # Chapter V.2.6: Dynamically generate manual
+                self._generate_manual()
+            except Exception as e:
+                print(f"Failed to connect MCP: {e}")
+
+    def _generate_manual(self) -> str:
+            """Mandatory Sandbox Manual (Page 12/16)."""
+            manual = "Available Tools:\n"
+            manual += "- read_file(filepath, start_line, end_line)\n"
+            manual += "- edit_file(filepath, old_str, new_str)\n"
+            manual += "- list_files(directory, pattern)\n"
+            manual += "- search_code(pattern, file_pattern)\n"
+            manual += "- final_answer(solution): Call this when you are done.\n"
+            return manual
