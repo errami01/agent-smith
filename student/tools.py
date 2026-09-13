@@ -96,3 +96,22 @@ class Toolset:
             return "PASSED: All tests passed."
         except Exception as e:
             return f"FAILED: {str(e)}"
+
+    # Add this to Toolset in student/tools.py
+
+    @staticmethod
+    def run_command(command: str, workdir: str = "/testbed") -> str:
+        """Executes a shell command in the specified directory."""
+        import subprocess
+        try:
+            result = subprocess.run(
+                command, 
+                shell=True, 
+                cwd=workdir, 
+                capture_output=True, 
+                text=True, 
+                timeout=30
+            )
+            return f"STDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+        except Exception as e:
+            return f"Command execution failed: {e}"
