@@ -1,8 +1,9 @@
-from mcp.server.fastmcp import FastMCP
+from mcp.server import MCPServer
 from student.tools import Toolset
+from typing import List
 
 
-mcp = FastMCP("AgentSmithTools")
+mcp = MCPServer("AgentSmithTools")
 
 @mcp.tool()
 def read_file(filepath: str, start_line: int = 1, end_line: int = 100) -> str:
@@ -23,3 +24,8 @@ def list_files(directory: str, pattern: str = ".*") -> str:
 def search_code(pattern: str, file_pattern: str = ".*") -> str:
     """Search for code pattern."""
     return Toolset.search_code(pattern, file_pattern)
+
+@mcp.tool()
+def run_tests(code: str, tests: List[str]) -> str:
+    """Search for code pattern."""
+    return Toolset.run_tests(code, tests)

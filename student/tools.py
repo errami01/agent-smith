@@ -81,3 +81,18 @@ class Toolset:
             return "\n".join(results) if results else "No matches found."
         except Exception as e:
             return f"Search error: {e}"
+
+    @staticmethod
+    def run_tests(code: str, tests: List[str]) -> str:
+        """
+        Executes code followed by a series of assert statements.
+        Returns 'All tests passed' or the failure message.
+        """
+        test_script = code + "\n" + "\n".join(tests)
+        # We can use a temporary local execution for tests 
+        # as they run outside the primary agent loop sandbox.
+        try:
+            exec(test_script, {"__builtins__": __import__("builtins")})
+            return "PASSED: All tests passed."
+        except Exception as e:
+            return f"FAILED: {str(e)}"

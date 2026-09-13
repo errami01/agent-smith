@@ -12,12 +12,15 @@ class Orchestrator:
         llm: LLMClient,
         sandbox: Sandbox,
         system_prompt: str,
-        max_iterations: int = 10
+        max_iterations: int = 3
     ) -> None:
         self.llm = llm
         self.sandbox = sandbox
-        self.system_prompt = system_prompt
         self.max_iterations = max_iterations
+        # DYNAMIC INJECTION:
+        # Get the tool manual from the sandbox and append it to the prompt
+        tool_manual = self.sandbox.get_tool_manual()
+        self.full_system_prompt = f"{system_prompt}\n\n{tool_manual}"
 
     def _extract_code(self, text: str) -> Optional[str]:
         """Extracts Python code from various formats (Page 10)."""
@@ -35,7 +38,7 @@ class Orchestrator:
 
     def solve(self, task_id: str, problem_desc: str) -> SolutionOutput:
         messages = [
-            {"role": "system", "content": self.system_prompt},
+            {"role": "system", "content": self.full_system_prompt},
             {"role": "user", "content": problem_desc}
         ]
         
@@ -47,9 +50,10 @@ class Orchestrator:
         for i in range(1, self.max_iterations + 1):
             # 1. Get LLM Response (Thought + Code)
             step_metrics = self.llm.request(messages, i)
-            
+            print(f"llm:\n{step_metrics.llm_output}")
             # 2. Extract Code
             code = self._extract_code(step_metrics.llm_output)
+            print(f"Extracted code: \n{code}")
             step_metrics.sandbox_input = code or ""
             
             if not code:
@@ -61,6 +65,7 @@ class Orchestrator:
 
             # 3. Execute in Sandbox (Observation)
             observation = self.sandbox.run_code(code)
+            print(f"Observations: \n {observation}")
             step_metrics.sandbox_output = observation
             steps.append(step_metrics)
 
@@ -79,7 +84,7 @@ class Orchestrator:
             benchmark="mbpp",  # Default for now
             success=success,
             solution=final_solution,
-            system_prompt=self.system_prompt,
+            system_prompt=self.full_system_prompt,
             iterations=len(steps),
             total_requests=len(steps),
             total_input_tokens=sum(s.input_tokens for s in steps),
