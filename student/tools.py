@@ -115,3 +115,19 @@ class Toolset:
             return f"STDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
         except Exception as e:
             return f"Command execution failed: {e}"
+
+    @staticmethod
+    def get_patch(workdir: str = "/testbed") -> str:
+        """Retrieves the unified git diff of changes."""
+        import subprocess
+        # Mandatory command : 'git -c core.fileMode=false diff'
+        try:
+            result = subprocess.run(
+                ['git', '-c', 'core.fileMode=false', 'diff'],
+                cwd=workdir,
+                capture_output=True,
+                text=True
+            )
+            return result.stdout
+        except Exception as e:
+            return f"Failed to get patch: {e}"
