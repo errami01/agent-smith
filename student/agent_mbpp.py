@@ -9,7 +9,6 @@ from student.schema import MBPPTaskInput, SolutionOutput, SandboxConfig
 from student.llm_client import LLMClient
 from student.sandbox import Sandbox
 from student.orchestrator import Orchestrator
-import asyncio
 
 
 
@@ -38,7 +37,7 @@ def main() -> None:
     # Load the variables from the .env file
     load_dotenv()
     # 1. Load API keys from Env (Mandatory Page 32)
-    api_key_str = os.getenv("GEMINI_API_KEY", "")
+    api_key_str = os.getenv("GROQ_API_KEY", "")
     if not api_key_str:
         print("Error: OPENROUTER_API_KEY not found.")
         sys.exit(1)

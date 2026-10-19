@@ -37,6 +37,9 @@ class Orchestrator:
         return None
 
     def solve(self, task_id: str, problem_desc: str) -> SolutionOutput:
+        print(self.full_system_prompt)
+        print(problem_desc)
+        exit()
         messages = [
             {"role": "system", "content": self.full_system_prompt},
             {"role": "user", "content": problem_desc}

@@ -35,8 +35,8 @@ class LLMClient:
         payload = {
             "model": self.model_name,
             "messages": messages,
-            "stop": stop_sequences or ["Observation:", "<end_code>"],
-            "temperature": 0.0  # Coding agents require determinism
+            # "stop": stop_sequences or ["Observation:", "<end_code>"],
+            "temperature": 0.5  # Coding agents require determinism
         }
 
         start_time = time.time()
@@ -55,10 +55,11 @@ class LLMClient:
                     self._rotate_key()
                     retries += 1
                     continue
-                
+                # if response.status_code == 503:
+                print("DEBUG ERROR:", response.json()) 
                 response.raise_for_status()
                 data = response.json()
-                
+                print(f"llm data: {data}")
                 content = data["choices"][0]["message"]["content"]
                 usage = data.get("usage", {})
                 

@@ -1,6 +1,7 @@
 import sys
 import multiprocessing
 import io
+import os
 import traceback
 from typing import Dict, Any, Optional, List
 from types import ModuleType
@@ -111,6 +112,7 @@ class Sandbox:
         server_params = StdioServerParameters(
             command="uv",
             args=["run", "python", server_script],
+            env=os.environ.copy()
         )
 
         # Force execution of the async connection stack synchronously
@@ -135,7 +137,7 @@ class Sandbox:
 
     def _create_tool_wrapper(self, tool_name: str):
         def wrapper(*args, **kwargs):
-            # No async/await! This is purely synchronous now.
+            # No async/await! This is purely synchronous.
             if not self.session:
                 return "Error: MCP session not connected."
             
@@ -157,7 +159,6 @@ class Sandbox:
         if not self.session:
             return "No tools connected."
         
-        # We assume you've already called connect_mcp()
         tools_result = self.loop.run_until_complete(self.session.list_tools())
         tools = getattr(tools_result, 'tools', tools_result)
         
@@ -168,6 +169,8 @@ class Sandbox:
             manual += f"- {tool.name}(...): {desc}\n"
             manual += f"  Parameters: {tool.input_schema.get('properties', {})}\n"
             
-        manual += "\nTo finalize your answer, call: final_answer(result)"
+        manual += """\n- You MUST use keyword arguments when calling tools:
+        Example: read_file(filepath="/testbed/main.py").
+        DO NOT write: read_file("/testbed/main.py")"""
         return manual
 
