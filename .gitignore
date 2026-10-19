@@ -1,7 +1,13 @@
 ./__pycache__
 student/__pycache__
-src/game/__pycache__
+.cache/
 .venv
-mazegenerator*
 test.py
 .env
+*.log
+test_swebench_task.json
+test_mbpp_task.json
+test_solution.json
+draft.md
+prompts.py
+tesbed
