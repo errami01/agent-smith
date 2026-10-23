@@ -38,11 +38,38 @@ To execute an MBPP task:
 cd student
 uv run python -m agent_mbpp --task-file ../cache/mbpp_task.json --output ../cache/mbpp_solution.json --model-name "model/name" --provider-url "https://provider.api/v1"
 ```
+Example of a mbpp task
+```json 
+< > mbpp_task.json
+{
+  "task_id": 123,
+  "task_definition": "Write a function to find the maximum of two numbers.",
+  "function_definition": "def max_of_two(a, b):",
+  "test_imports": [],
+  "test_list": [
+    "assert max_of_two(5, 10) == 10",
+    "assert max_of_two(-1, -5) == -1",
+    "assert max_of_two(7, 7) == 7"
+  ]
+}
+```
 
 2. Running the SWE-bench Agent
 To execute a SWE-bench task inside the Docker environment:
 ```Bash
 uv run python -m student.agent_swebench   --task-file /cache/swebench_task.json   --output test_solution.json   --model-name "qwen/qwen3.8-27b"   --provider-url "https://api.groq.com/openai/v1/chat/completions"
+```
+Example of swebech task:
+```json
+< > swebench_task.json
+{
+  "instance_id": "test_001",
+  "problem_statement": "The function 'calculate' in main.py returns a string instead of an int. Please fix it.",
+  "docker_image": "python:3.10-slim",
+  "eval_script": "python -c 'from main import calculate; assert calculate(2, 2) == 4'",
+  "hints_text": "Look at the return statement in main.py.",
+  "repo": "testbed"
+}
 ```
 ## System Architecture
 Agent Smith is built using a clean, modular architecture separating the agent's reasoning loop from the execution environment and tool interfaces:
