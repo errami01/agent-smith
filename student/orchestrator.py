@@ -23,13 +23,13 @@ class Orchestrator:
         self.full_system_prompt = f"{system_prompt}\n\n{tool_manual}"
 
     def _extract_code(self, text: str) -> Optional[str]:
-        """Extracts Python code from various formats (Page 10)."""
+        """Extracts Python code from various formats."""
         # 1. Standard Markdown blocks
         match = re.search(r"```python\n(.*?)\n```", text, re.DOTALL)
         if match:
             return match.group(1)
         
-        # 2. Custom tags mentioned in PDF
+        # 2. Custom tags mentioned
         match = re.search(r"<code>(.*?)</code>", text, re.DOTALL)
         if match:
             return match.group(1)
@@ -39,7 +39,7 @@ class Orchestrator:
     def solve(self, task_id: str, problem_desc: str) -> SolutionOutput:
         print(self.full_system_prompt)
         print(problem_desc)
-        exit()
+        # exit()
         messages = [
             {"role": "system", "content": self.full_system_prompt},
             {"role": "user", "content": problem_desc}

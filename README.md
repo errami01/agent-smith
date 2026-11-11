@@ -36,7 +36,7 @@ OPENROUTER_API_KEY=your_api_key_here
 To execute an MBPP task:
 ```Bash
 cd student
-uv run python -m agent_mbpp --task-file ../cache/mbpp_task.json --output ../cache/mbpp_solution.json --model-name "model/name" --provider-url "https://provider.api/v1"
+uv run python -m agent_mbpp --task-file mbpp_task.json --output mbpp_solution.json --model-name "qwen/qwen3.8-27b" --provider-url "https://api.groq.com/openai/v1/chat/completions"
 ```
 Example of a mbpp task
 ```json 
