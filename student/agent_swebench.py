@@ -27,7 +27,7 @@ def main() -> None:
     # Load the variables from the .env file
     load_dotenv()
     # 1. Load configuration
-    api_key_str = os.getenv("GROQ_API_KEY", "")
+    api_key_str = os.getenv("OPENROUTER_API_KEY", "")
 
     if not api_key_str:
         print("Error: OPENROUTER_API_KEY not found.")

@@ -25,7 +25,15 @@ def main() -> None:
         FORMAT:
         Always provide your code in a markdown block:
         ```python
-        # your code here
+          "task_id": 123,
+            "task_definition": "Write a function to find the maximum of two numbers.",
+            "function_definition": "def max_of_two(a, b):",
+            "test_imports": [],
+            "test_list": [
+                "assert max_of_two(5, 10) == 10",
+                "assert max_of_two(-1, -5) == -1",
+                "assert max_of_two(7, 7) == 7"
+            ]
         ```
         """
     parser = argparse.ArgumentParser()
@@ -37,7 +45,7 @@ def main() -> None:
     # Load the variables from the .env file
     load_dotenv()
     # 1. Load API keys from Env (Mandatory Page 32)
-    api_key_str = os.getenv("GROQ_API_KEY", "")
+    api_key_str = os.getenv("OPENROUTER_API_KEY", "")
     if not api_key_str:
         print("Error: OPENROUTER_API_KEY not found.")
         sys.exit(1)
