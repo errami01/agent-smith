@@ -56,8 +56,18 @@ Example of a mbpp task
 
 2. Running the SWE-bench Agent
 To execute a SWE-bench task inside the Docker environment:
+- Docker run command
 ```Bash
-uv run python -m student.agent_swebench   --task-file /cache/swebench_task.json   --output test_solution.json   --model-name "qwen/qwen3.8-27b"   --provider-url "https://api.groq.com/openai/v1/chat/completions"
+docker run -it --rm \
+  -v $(pwd)/student:/app/student \
+  -v $(pwd)/testbed:/testbed \
+  -v $(pwd)/test_swebench_task.json:/swebench_task.json \
+  --env-file .env \
+  myswebench-app /bin/bash
+```
+- Inside the container run the command
+```Bash
+uv run python -m student.agent_swebench   --task-file /swebench_task.json   --output test_solution.json   --model-name "qwen/qwen3.8-27b"   --provider-url "https://api.groq.com/openai/v1/chat/completions"
 ```
 Example of swebech task:
 ```json
