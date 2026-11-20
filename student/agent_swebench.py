@@ -27,12 +27,19 @@ def main() -> None:
     # Load the variables from the .env file
     load_dotenv()
     # 1. Load configuration
-    api_key_str = os.getenv("OPENROUTER_API_KEY", "")
-
+    url_lower = args.provider_url.lower()
+    if "openrouter" in url_lower:
+        env_name = "OPENROUTER_API_KEY"
+    elif "generativelanguage.googleapis.com" in url_lower or "gemini" in url_lower:
+        env_name = "GEMINI_API_KEY"
+    else:
+        env_name = "GROQ_API_KEY"
+    
+    api_key_str = os.getenv(env_name) or os.getenv("OPENROUTER_API_KEY") or os.getenv("GROQ_API_KEY") or ""
     if not api_key_str:
-        print("Error: OPENROUTER_API_KEY not found.")
+        print(f"Error: {env_name} not found.")
         sys.exit(1)
-    api_keys = api_key_str.split(",")
+    api_keys = [k.strip() for k in api_key_str.split(",") if k.strip()]
     
 
     with open(args.task_file, "r") as f:
@@ -58,7 +65,7 @@ def main() -> None:
     - Do not submit an empty patch.
     Example exploration:
     ```python
-    print(search_code(pattern="validate", file_pattern="*.py"))
+    print(search_code(pattern="validate", file_pattern="\\.py$"))
     ```
     <end_code>
 

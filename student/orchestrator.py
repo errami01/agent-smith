@@ -35,6 +35,18 @@ class Orchestrator:
             return match.group(1)
             
         return None
+    def _truncate_observation(self, text: str, max_chars: int = 5000) -> str:
+        """Truncates overly long tool outputs (head + tail) to save tokens."""
+        if len(text) <= max_chars or "FINAL_ANSWER_TRIGGERED:" in text:
+            return text
+        half = max_chars // 2
+        omitted = len(text) - max_chars
+        notice = (
+            f"\n\n... [Tool output was truncated due to size limits: "
+            f"{omitted} chars omitted out of {len(text)}. "
+            f"Use read_file with start_line/end_line or narrower search_code.] ...\n\n"
+        )
+        return text[:half] + notice + text[-half:]
 
     def solve(self, task_id: str, problem_desc: str) -> SolutionOutput:
         print(self.full_system_prompt)
@@ -68,6 +80,9 @@ class Orchestrator:
 
             # 3. Execute in Sandbox (Observation)
             observation = self.sandbox.run_code(code)
+            if not observation.strip():
+                observation = "Code executed with no output. Print test results or call final_answer(solution) to submit."
+            observation = self._truncate_observation(observation)
             print(f"Observations: \n {observation}")
             step_metrics.sandbox_output = observation
             steps.append(step_metrics)
@@ -89,7 +104,7 @@ class Orchestrator:
             solution=final_solution,
             system_prompt=self.full_system_prompt,
             iterations=len(steps),
-            total_requests=len(steps),
+            total_requests=sum(1 + s.retries for s in steps),
             total_input_tokens=sum(s.input_tokens for s in steps),
             total_output_tokens=sum(s.output_tokens for s in steps),
             total_time_seconds=time.time() - start_time,

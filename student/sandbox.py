@@ -146,7 +146,6 @@ class Sandbox:
             )
             # Access text content (simplified for standard MCP tool responses)
             tool_output = result.content[0].text
-            print(f"{tool_output}") # Bubbles up to host via stdout
             return tool_output
         return wrapper
     def close(self):

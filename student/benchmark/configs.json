@@ -1,5 +1,5 @@
 {
-    "models": [
+    "model": [
     {
         "id": "qwen/qwen3-32b",
         "model_name": "qwen/qwen3-32b",
@@ -13,8 +13,8 @@
         "api_key_env": "GROQ_API_KEY"
     },
     {
-        "id": "cohere/north-mini-code",
-        "model_name": "cohere/north-mini-code:free",
+        "id": "nvidia/nemotron-3-ultra-550b-a55b",
+        "model_name": "nvidia/nemotron-3-ultra-550b-a55b:free",
         "provider_url": "https://openrouter.ai/api/v1/chat/completions",
         "api_key_env": "OPENROUTER_API_KEY"
     },
@@ -26,14 +26,22 @@
     },
     {
         "id": "gemini-2.5-flash",
-        "model_name": "gemini-2.5-flash",
-        "provider_url": "https://api.groq.com/openai/v1/chat/completions",
+        "model_name": "gemini-3.8-flash",
+        "provider_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
         "api_key_env": "GEMINI_API_KEY"
     }
     ],
     "tasks": [
-        "pydata__xarray-4629",
-        "sympy__sympy-18189",
-        "django__django-15851"
-    ]
+        "cache/tasks/pydata__xarray-4629.json",
+        "cache/tasks/sympy__sympy-18189.json",
+        "cache/tasks/django__django-15851.json"
+    ],
+      "ablations": {
+        "baseline": {
+        "extra_args": ["--disable-stop", "--prompt-variant", "baseline"]
+        },
+        "optimized": {
+        "extra_args": ["--prompt-variant", "optimized"]
+        }
+    }
 }

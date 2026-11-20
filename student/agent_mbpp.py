@@ -14,28 +14,21 @@ from student.orchestrator import Orchestrator
 
 def main() -> None:
     MBPP_SYSTEM_PROMPT = """You are an expert Python programmer agent.
-        Your goal is to solve the provided programming task.
-        Code: Write a Python code block using the tool calling format.
-        If all tests passed, Call final_answer(answer:str) and pass the answer as a string
+    Solve the given Python task inside one executable ```python code block per turn.
 
-        TOOLS:
-        - run_tests(): Runs the tests provided in the task description.
-        - final_answer(answer:str): Call this after All tests passed.
+    Workflow:
+    1. Write the solution function and test it with `run_tests(code=..., tests=...)` (or asserts).
+    2. As soon as tests pass, call `final_answer(code_str)` passing ONLY the Python function code as a string.
 
-        FORMAT:
-        Always provide your code in a markdown block:
-        ```python
-          "task_id": 123,
-            "task_definition": "Write a function to find the maximum of two numbers.",
-            "function_definition": "def max_of_two(a, b):",
-            "test_imports": [],
-            "test_list": [
-                "assert max_of_two(5, 10) == 10",
-                "assert max_of_two(-1, -5) == -1",
-                "assert max_of_two(7, 7) == 7"
-            ]
-        ```
-        """
+    Example:
+    ```python
+    code = '''def add(a, b):
+        return a + b'''
+    res = run_tests(code=code, tests=["assert add(1, 2) == 3"])
+    print(res)
+    if "PASSED" in res:
+        final_answer(code)
+    ```"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--task-file", required=True)
     parser.add_argument("--output", required=True)
@@ -45,9 +38,9 @@ def main() -> None:
     # Load the variables from the .env file
     load_dotenv()
     # 1. Load API keys from Env (Mandatory Page 32)
-    api_key_str = os.getenv("OPENROUTER_API_KEY", "")
+    api_key_str = os.getenv("GROQ_API_KEY", "")
     if not api_key_str:
-        print("Error: OPENROUTER_API_KEY not found.")
+        print("Error: GROQ_API_KEY not found.")
         sys.exit(1)
     api_keys = api_key_str.split(",")
 
