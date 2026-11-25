@@ -52,6 +52,9 @@ class LLMClient:
                     )
                 
                 if response.status_code == 429:  # Rate limit
+                    retry_after = float(response.headers.get("retry-after", 10))
+                    print(f"Rate limit (429), waiting {retry_after}s...")
+                    time.sleep(min(retry_after + 1, 60))
                     self._rotate_key()
                     retries += 1
                     continue
@@ -79,4 +82,4 @@ class LLMClient:
                 if retries >= len(self.api_keys) * 2:
                     raise RuntimeError(f"LLM Request failed after retries: {e}")
         
-        raise RuntimeError("Unreachable")
+        raise RuntimeError("LLM Request failed: rate limit (429) exceeded after retries")

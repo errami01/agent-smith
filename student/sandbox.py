@@ -110,8 +110,8 @@ class Sandbox:
     def connect_mcp(self, server_script: str) -> None:
         """Synchronously connects to the MCP server."""
         server_params = StdioServerParameters(
-            command="uv",
-            args=["run", "python", server_script],
+            command=sys.executable,
+            args=[server_script],
             env=os.environ.copy()
         )
 

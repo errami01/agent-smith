@@ -72,7 +72,9 @@ class Orchestrator:
             step_metrics.sandbox_input = code or ""
             
             if not code:
-                step_metrics.sandbox_output = "Error: No valid code block found."
+                step_metrics.sandbox_output = (
+                "Error: No valid code block found. "
+                "Wrap ALL Python code (including final_answer(...)) in ```python ... ```.")
                 steps.append(step_metrics)
                 messages.append({"role": "assistant", "content": step_metrics.llm_output})
                 messages.append({"role": "user", "content": step_metrics.sandbox_output})

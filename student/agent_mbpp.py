@@ -14,21 +14,25 @@ from student.orchestrator import Orchestrator
 
 def main() -> None:
     MBPP_SYSTEM_PROMPT = """You are an expert Python programmer agent.
-    Solve the given Python task inside one executable ```python code block per turn.
+        Your goal is to solve the provided programming task.
+        Code: Write a Python code block using the tool calling format.
+        If all tests passed, call final_answer(answer=...) inside a ```python block and pass the complete Python function code as a string.
+        TOOLS:
+        - run_tests(): Runs the tests provided in the task description.
+        - final_answer(answer:str): Call this after all tests passed.
+        FORMAT:
+        Always wrap ALL Python code (including final_answer) in a markdown block:
+        ```python
+        # your code here
+        ```
+        Example final step:
+        ```python
+        code = '''def add(a, b):
+            return a + b'''
+        final_answer(answer=code)
+        ```
+        """
 
-    Workflow:
-    1. Write the solution function and test it with `run_tests(code=..., tests=...)` (or asserts).
-    2. As soon as tests pass, call `final_answer(code_str)` passing ONLY the Python function code as a string.
-
-    Example:
-    ```python
-    code = '''def add(a, b):
-        return a + b'''
-    res = run_tests(code=code, tests=["assert add(1, 2) == 3"])
-    print(res)
-    if "PASSED" in res:
-        final_answer(code)
-    ```"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--task-file", required=True)
     parser.add_argument("--output", required=True)
@@ -37,12 +41,20 @@ def main() -> None:
     args = parser.parse_args()
     # Load the variables from the .env file
     load_dotenv()
-    # 1. Load API keys from Env (Mandatory Page 32)
-    api_key_str = os.getenv("GROQ_API_KEY", "")
+    # 1. Load configuration
+    url_lower = args.provider_url.lower()
+    if "openrouter" in url_lower:
+        env_name = "OPENROUTER_API_KEY"
+    elif "generativelanguage.googleapis.com" in url_lower or "gemini" in url_lower:
+        env_name = "GEMINI_API_KEY"
+    else:
+        env_name = "GROQ_API_KEY"
+    
+    api_key_str = os.getenv(env_name) or os.getenv("OPENROUTER_API_KEY") or os.getenv("GROQ_API_KEY") or ""
     if not api_key_str:
-        print("Error: GROQ_API_KEY not found.")
+        print(f"Error: {env_name} not found.")
         sys.exit(1)
-    api_keys = api_key_str.split(",")
+    api_keys = [k.strip() for k in api_key_str.split(",") if k.strip()]
 
     # 2. Load Task
     with open(args.task_file, "r") as f:
